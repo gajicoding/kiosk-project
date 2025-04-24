@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -5,18 +7,34 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
 
-        int selectedMenuNum;
+        List<MenuItem> menuItems = new ArrayList<>(List.of(
+                new MenuItem("ShackBurger", 6900, "토마토, 양상추, 쉑소스가 토핑된 치즈버거"),
+                new MenuItem("SmokeShack", 8900, "베이컨, 체리 페퍼에 쉑소스가 토핑된 치즈버거"),
+                new MenuItem("Cheeseburger", 6900, "포테이토 번과 비프패티, 치즈가 토핑된 치즈버거"),
+                new MenuItem("Hamburger", 5400, "비프패티를 기반으로 야채가 들어간 기본버거")
+        ));
 
-        do{
+
+        while(true) {
             System.out.println("[ SHAKESHACK MENU ]");
-            System.out.println("1. ShackBurger   | W 6.9 | 토마토, 양상추, 쉑소스가 토핑된 치즈버거");
-            System.out.println("2. SmokeShack    | W 8.9 | 베이컨, 체리 페퍼에 쉑소스가 토핑된 치즈버거");
-            System.out.println("3. Cheeseburger  | W 6.9 | 포테이토 번과 비프패티, 치즈가 토핑된 치즈버거");
-            System.out.println("4. Hamburger     | W 5.4 | 비프패티를 기반으로 야채가 들어간 기본버거");
-            System.out.println("0. 종료      | 종료");
 
-            selectedMenuNum = sc.nextInt();
-        } while(selectedMenuNum != 0);
+            int i=1;
+            for(MenuItem menuItem : menuItems){
+                System.out.printf("%d. %s\n", i++, menuItem.getFormattedMenuItemString());
+            }
+
+            System.out.println("0. 종료\t\t| 종료");
+
+            int selectedMenuNum = sc.nextInt();
+
+            if(selectedMenuNum == 0){
+                break;
+            }
+
+            System.out.println(menuItems.get(selectedMenuNum - 1).getFormattedMenuItemString());
+            System.out.println();
+
+        }
 
         System.out.println("프로그램을 종료합니다.");
     }
