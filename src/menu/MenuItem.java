@@ -21,6 +21,6 @@ public class MenuItem {
 
 
     public String getFormattedString() {
-        return String.format("%-15s\t| W %.1f | %s", name, (double)price/1000, description);
+        return String.format("%-15s\t| W %.1f | %s", name, price/1000.0, description);
     }
 }

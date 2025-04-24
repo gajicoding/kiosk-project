@@ -2,11 +2,13 @@ package kiosk;
 
 import menu.Menu;
 import menu.MenuItem;
+import order.DiscountRule;
 import order.Order;
 import menu.OrderMenuItem;
 import order.OrderItem;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 
 public class Kiosk {
@@ -60,7 +62,7 @@ public class Kiosk {
                 }
 
                 System.out.println("\n[ Total ]");
-                System.out.printf("w %.1f\n\n", (double)order.getTotalPrice()/1000);
+                System.out.printf("w %.1f\n\n", order.getTotalPrice()/1000.0);
 
                 System.out.println("1. 주문\t\t2. 메뉴판");
                 selectedNum2 = scanner.getInputBetweenZeroAndNum(2);
@@ -116,7 +118,20 @@ public class Kiosk {
 
         }
 
-        System.out.printf("주문이 완료되었습니다. 금액은 w %.1f입니다.\n", (double)order.getTotalPrice()/1000);
+        i = 1;
+        System.out.println("할인 정보를 입력해주세요.");
+        for(DiscountRule rule: DiscountRule.values()){
+            System.out.printf("%d. %s\n", i, rule.getFormattedString());
+        }
+        System.out.println("");
+
+
+        selectedNum = scanner.getInputBetweenZeroAndNum(DiscountRule.values().length);
+
+        int totalPrice =  DiscountRule.values()[selectedNum - 1]
+                            .discountApply(order.getTotalPrice());
+
+        System.out.printf("주문이 완료되었습니다. 금액은 w %.1f입니다.\n", totalPrice/1000.0);
 
         System.out.println("프로그램을 종료합니다.");
     }
