@@ -19,12 +19,8 @@ public class MenuItem {
         return price;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
 
     public String getFormattedString() {
-        return String.format("%s\t| W %.1f | %s", name, (double)price/1000, description);
+        return String.format("%-15s\t| W %.1f | %s", name, (double)price/1000, description);
     }
 }
