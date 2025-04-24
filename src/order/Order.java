@@ -9,15 +9,6 @@ import java.util.Optional;
 public class Order {
     private final List<OrderItem> order = new ArrayList<>();
 
-    private boolean isItemInOrder(MenuItem menuItem){
-        for (OrderItem orderItem : order) {
-            if (orderItem.getItem().equals(menuItem)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public Optional<OrderItem> findItemByMenuItem(MenuItem menuItem) {
         for (OrderItem orderItem : order) {
             if (orderItem.getItem().equals(menuItem)) {

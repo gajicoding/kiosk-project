@@ -3,9 +3,9 @@ package kiosk;
 import java.util.Scanner;
 
 class KioskScanner {
-    private Scanner sc = new Scanner(System.in);
+    private final Scanner sc = new Scanner(System.in);
 
-    public int getInputBetweenZeroAndNum(int num) throws Exception{
+    public int getInputBetweenZeroAndNum(int num) throws RuntimeException{
         int input = sc.nextInt();
         sc.nextLine(); // 버퍼 비우기
 

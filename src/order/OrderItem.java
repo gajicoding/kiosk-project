@@ -4,7 +4,7 @@ import menu.MenuItem;
 
 
 public class OrderItem {
-    private MenuItem item;
+    private final MenuItem item;
     private int count;
     private int totalPrice;
 

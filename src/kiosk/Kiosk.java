@@ -24,7 +24,7 @@ public class Kiosk {
         this.menuList = List.of(menus);
     }
 
-    public void start() throws Exception {
+    public void start() throws RuntimeException {
         // 스캐너 선언
         KioskScanner scanner = new KioskScanner();
 
