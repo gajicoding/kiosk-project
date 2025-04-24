@@ -1,3 +1,8 @@
+package kiosk;
+
+import menu.Menu;
+import menu.MenuItem;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -42,7 +47,7 @@ public class Kiosk {
             i = 1;
             System.out.printf("\n[ %s MENU ]\n", selectedCategory.getName());
             for(MenuItem menuItem: selectedCategory.getMenuItems()){
-                System.out.printf("%d. %s\n", i++, menuItem.getFormattedMenuItemString());
+                System.out.printf("%d. %s\n", i++, menuItem.getFormattedString());
             }
             System.out.println("0. 종료\t\t| 종료");
 
@@ -59,7 +64,7 @@ public class Kiosk {
             MenuItem selectedItem = selectedCategory.getMenuItem(selectedNum - 1);
 
 
-            System.out.println("선택한 메뉴: " + selectedItem.getFormattedMenuItemString());
+            System.out.println("선택한 메뉴: " + selectedItem.getFormattedString());
             System.out.println();
         }
 

@@ -1,3 +1,7 @@
+import kiosk.Kiosk;
+import menu.Menu;
+import menu.MenuItem;
+
 public class Main {
     public static void main(String[] args) {
         // Menu 객체 생성을 통해 이름 설정
