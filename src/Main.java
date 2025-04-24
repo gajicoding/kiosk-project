@@ -1,3 +1,7 @@
+import kiosk.Kiosk;
+import menu.Menu;
+import menu.MenuItem;
+
 public class Main {
     public static void main(String[] args) {
         // Menu 객체 생성을 통해 이름 설정
@@ -18,8 +22,8 @@ public class Main {
         );
 
         Menu DessertMenu  = new Menu("DESSERTS",
-                new MenuItem("Matcha Cookie", 2500, "말차 쿠키"),
-                new MenuItem("Chocolate Cookie", 8900, "초코 쿠키")
+                new MenuItem("Matcha Cookie", 3000, "말차 쿠키"),
+                new MenuItem("Chocolate Cookie", 2500, "초코 쿠키")
         );
 
 
