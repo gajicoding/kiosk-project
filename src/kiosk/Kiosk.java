@@ -8,7 +8,6 @@ import menu.OrderMenuItem;
 import order.OrderItem;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 
 public class Kiosk {
@@ -46,7 +45,7 @@ public class Kiosk {
             if(order.getTotalCount() > 0){
                 System.out.println("\n[ ORDER MENU ]");
                 for(OrderMenuItem menu : orderMenu){
-                    System.out.printf("%d. %s\n", i++, menu.getFormattedString());
+                    System.out.println((i++) +". "+ menu.getFormattedString());
                 }
             }
 
@@ -57,12 +56,12 @@ public class Kiosk {
             if(selectedNum == 4) {
                 System.out.println("\n 아래와 같이 주문 하시겠습니까?\n");
                 System.out.println("[ Orders ]");
-                for(OrderItem orderItem: order.getOrder()){
+                for(OrderItem orderItem: order.getOrderList()){
                     System.out.println(orderItem.getFormattedString());
                 }
 
                 System.out.println("\n[ Total ]");
-                System.out.printf("w %.1f\n\n", order.getTotalPrice()/1000.0);
+                System.out.printf("w %,d\n\n", order.getTotalPrice());
 
                 System.out.println("1. 주문\t\t2. 메뉴판");
                 selectedNum2 = scanner.getInputBetweenZeroAndNum(2);
@@ -84,9 +83,9 @@ public class Kiosk {
 
             // 2. 제품 선택
             i = 1;
-            System.out.printf("\n[ %s MENU ]\n", selectedCategory.getName());
+            System.out.println("\n[ "+ selectedCategory.getName() +" MENU ]\n");
             for(MenuItem menuItem: selectedCategory.getMenuItems()){
-                System.out.printf("%d. %s\n", i++, menuItem.getFormattedString());
+                System.out.println((i++) +". "+ menuItem.getFormattedString());
             }
             System.out.println("0. 뒤로가기\t\t| 종료");
 
@@ -121,9 +120,9 @@ public class Kiosk {
         i = 1;
         System.out.println("할인 정보를 입력해주세요.");
         for(DiscountRule rule: DiscountRule.values()){
-            System.out.printf("%d. %s\n", i, rule.getFormattedString());
+            System.out.println((i++) +". "+rule.getFormattedString());
         }
-        System.out.println("");
+        System.out.println();
 
 
         selectedNum = scanner.getInputBetweenZeroAndNum(DiscountRule.values().length);
@@ -131,7 +130,7 @@ public class Kiosk {
         int totalPrice =  DiscountRule.values()[selectedNum - 1]
                             .discountApply(order.getTotalPrice());
 
-        System.out.printf("주문이 완료되었습니다. 금액은 w %.1f입니다.\n", totalPrice/1000.0);
+        System.out.printf("주문이 완료되었습니다. 금액은 w %,d 입니다.\n", totalPrice);
 
         System.out.println("프로그램을 종료합니다.");
     }

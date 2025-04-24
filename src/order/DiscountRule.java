@@ -16,7 +16,7 @@ public enum DiscountRule {
 
 
     public int discountApply(int totalPrice){
-        return totalPrice - (int)(totalPrice*percentage);
+        return totalPrice - (int)Math.round(totalPrice*percentage);
     }
 
     public String getFormattedString() {

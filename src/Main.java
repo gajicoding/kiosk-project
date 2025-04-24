@@ -3,7 +3,7 @@ import menu.Menu;
 import menu.MenuItem;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         // Menu 객체 생성을 통해 이름 설정
         // Menu 클래스 내 있는 List<MenuItem> 에 MenuItem 객체 생성하면서 삽입
 
@@ -22,7 +22,7 @@ public class Main {
         );
 
         Menu DessertMenu  = new Menu("DESSERTS",
-                new MenuItem("Matcha Cookie", 2500, "말차 쿠키"),
+                new MenuItem("Matcha Cookie", 3000, "말차 쿠키"),
                 new MenuItem("Chocolate Cookie", 2500, "초코 쿠키")
         );
 

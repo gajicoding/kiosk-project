@@ -2,49 +2,37 @@ package order;
 
 import menu.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Order {
-    private final List<OrderItem> order = new ArrayList<>();
-
-    public Optional<OrderItem> findItemByMenuItem(MenuItem menuItem) {
-        for (OrderItem orderItem : order) {
-            if (orderItem.getItem().equals(menuItem)) {
-                return Optional.of(orderItem);
-            }
-        }
-        return Optional.empty();
-    }
+    private final Map<MenuItem, OrderItem> orderMap = new HashMap<>();
 
     public void addOrderItem(MenuItem menuItem) {
-        Optional<OrderItem> foundItem = findItemByMenuItem(menuItem);
-        if(foundItem.isPresent()){
-            foundItem.get().addItem();
-        } else {
-            order.add(new OrderItem(menuItem));
-        }
+        orderMap.compute(menuItem, (key, existingOrderItem) -> {
+            if (existingOrderItem == null) {
+                return new OrderItem(menuItem);
+            } else {
+                existingOrderItem.addItem();
+                return existingOrderItem;
+            }
+        });
     }
 
     public int getTotalCount() {
-        int totalCount = 0;
-
-        for (OrderItem orderItem : order) {
-            totalCount += orderItem.getCount();
-        }
-        return totalCount;
+        // 스트림 활용
+        return orderMap.values().stream()
+                .mapToInt(OrderItem::getCount)
+                .sum();
     }
 
     public int getTotalPrice() {
-        int totalPrice = 0;
-        for (OrderItem orderItem : order) {
-            totalPrice += orderItem.getTotalPrice();
-        }
-        return totalPrice;
+        // 스트림 활용
+        return orderMap.values().stream()
+                .mapToInt(OrderItem::getTotalPrice)
+                .sum();
     }
 
-    public List<OrderItem> getOrder() {
-        return order;
+    public List<OrderItem> getOrderList() {
+        return new ArrayList<>(orderMap.values());
     }
 }
