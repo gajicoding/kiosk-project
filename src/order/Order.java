@@ -31,4 +31,9 @@ public class Order {
         );
         return sb.toString();
     }
+
+    public void reset() {
+        orderMap.clear();
+    }
+
 }

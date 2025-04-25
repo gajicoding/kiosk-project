@@ -59,8 +59,6 @@ public class Kiosk {
         orderMenuMap.put(Const.DISCOUNT, discountMenu);
     }
 
-    int totalPrice;
-
     public void start() throws RuntimeException {
 
         int optionSize;
@@ -205,4 +203,62 @@ public class Kiosk {
         System.out.println("프로그램을 종료합니다.");
         scanner.close();
     }
+
+
+
+
+    private <T extends MenuFunc> void printMenu(Map<String, T> menuMap) {
+        int startIndex = 1;
+        System.out.println("\n[ " + "MAIN" + " ]");
+        for (T menu : menuMap.values()) {
+            System.out.println(startIndex++ + ". " + menu.getName());
+        }
+    }
+
+    private <T extends MenuFunc> void printMenuItems(T menu, int startIndex) {
+        System.out.println("\n[ " + menu.getName() + " ]");
+        for (ItemFunc items : menu.getItems()) {
+            System.out.println(startIndex++ + ". " + items.getFormattedString());
+        }
+    }
+
+    private <T extends MenuFunc> void putSelectNumOptionByMap(Map<String, T> menuMap) {
+        int startIndex = 1;
+        for (T menu : menuMap.values()) {
+            OptionNumMap.put(menu.getName(), startIndex);
+            selectOptionMap.put(startIndex++, menu);
+        }
+    }
+
+    private <T extends MenuFunc> void putSelectNumOptionByMenu(T menu, int startIndex) {
+        for (ItemFunc item : menu.getItems()) {
+            OptionNumMap.put(item.getName(), startIndex);
+            selectOptionMap.put(startIndex++, menu);
+        }
+    }
+
+
+    private void printExitMenu() {
+        System.out.println("0. 종료\t\t| 종료");
+    }
+
+    private void printOrderChoice(){
+        System.out.println("\n 아래와 같이 주문 하시겠습니까?\n");
+        System.out.println("[ Orders ]");
+        System.out.print(order.getOrderListFormattedString());
+
+        System.out.println("\n[ Total ]");
+        System.out.printf("w %,d\n", order.getTotalPrice());
+    }
+
+    private CommandKey getCommandKeyBySelectedNum(int selectedNum) {
+        for (CommandKey key : CommandKey.values()) {
+            if (OptionNumMap.getOrDefault(key.getName(), -1) == selectedNum) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+
 }
