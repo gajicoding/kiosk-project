@@ -5,7 +5,6 @@ import menu.MenuItem;
 import order.DiscountRule;
 import order.Order;
 import menu.OrderMenuItem;
-import order.OrderItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +24,8 @@ public class Kiosk {
         this.menuList = List.of(menus);
     }
 
+    int totalPrice;
+
     public void start() throws RuntimeException {
         // 스캐너 선언
         KioskScanner scanner = new KioskScanner();
@@ -42,7 +43,7 @@ public class Kiosk {
             }
             System.out.println("0. 종료\t\t| 종료");
 
-            if(order.getTotalCount() > 0){
+            if(!order.isOrderEmpty()){
                 System.out.println("\n[ ORDER MENU ]");
                 for(OrderMenuItem menu : orderMenu){
                     System.out.println((i++) +". "+ menu.getFormattedString());
@@ -56,9 +57,7 @@ public class Kiosk {
             if(selectedNum == 4) {
                 System.out.println("\n 아래와 같이 주문 하시겠습니까?\n");
                 System.out.println("[ Orders ]");
-                for(OrderItem orderItem: order.getOrderList()){
-                    System.out.println(orderItem.getFormattedString());
-                }
+                System.out.println(order.getOrderListFormattedString());
 
                 System.out.println("\n[ Total ]");
                 System.out.printf("w %,d\n\n", order.getTotalPrice());
@@ -67,6 +66,20 @@ public class Kiosk {
                 selectedNum2 = scanner.getInputBetweenZeroAndNum(2);
 
                 if(selectedNum2 == 1){
+                    i = 1;
+                    System.out.println("할인 정보를 입력해주세요.");
+                    for(DiscountRule rule: DiscountRule.values()){
+                        System.out.println((i++) +". "+rule.getFormattedString());
+                    }
+                    System.out.println();
+
+
+                    selectedNum = scanner.getInputBetweenZeroAndNum(DiscountRule.values().length);
+
+                    totalPrice = DiscountRule.values()[selectedNum - 1]
+                                        .discountApply(order.getTotalPrice());
+
+                    System.out.printf("주문이 완료되었습니다. 금액은 w %,d 입니다.\n", totalPrice);
                     break;
                 } else if(selectedNum2 == 2){
                     continue;
@@ -74,7 +87,7 @@ public class Kiosk {
             }
 
 
-            if(selectedNum == 0 || selectedNum == i){   // 0이면 종료
+            if(selectedNum == 0 || selectedNum == i-1){   // 0이면 종료
                 break;
             }
 
@@ -83,7 +96,7 @@ public class Kiosk {
 
             // 2. 제품 선택
             i = 1;
-            System.out.println("\n[ "+ selectedCategory.getName() +" MENU ]\n");
+            System.out.println("\n[ "+ selectedCategory.getName() +" MENU ]");
             for(MenuItem menuItem: selectedCategory.getMenuItems()){
                 System.out.println((i++) +". "+ menuItem.getFormattedString());
             }
@@ -116,21 +129,6 @@ public class Kiosk {
             System.out.println();
 
         }
-
-        i = 1;
-        System.out.println("할인 정보를 입력해주세요.");
-        for(DiscountRule rule: DiscountRule.values()){
-            System.out.println((i++) +". "+rule.getFormattedString());
-        }
-        System.out.println();
-
-
-        selectedNum = scanner.getInputBetweenZeroAndNum(DiscountRule.values().length);
-
-        int totalPrice =  DiscountRule.values()[selectedNum - 1]
-                            .discountApply(order.getTotalPrice());
-
-        System.out.printf("주문이 완료되었습니다. 금액은 w %,d 입니다.\n", totalPrice);
 
         System.out.println("프로그램을 종료합니다.");
     }

@@ -5,34 +5,30 @@ import menu.MenuItem;
 import java.util.*;
 
 public class Order {
-    private final Map<MenuItem, OrderItem> orderMap = new HashMap<>();
+    // Map<MenuItem: 개수>
+    private final Map<MenuItem, Integer> orderMap = new HashMap<>();
 
     public void addOrderItem(MenuItem menuItem) {
-        orderMap.compute(menuItem, (key, existingOrderItem) -> {
-            if (existingOrderItem == null) {
-                return new OrderItem(menuItem);
-            } else {
-                existingOrderItem.addItem();
-                return existingOrderItem;
-            }
-        });
+        orderMap.compute(menuItem, (key, count) ->
+                count == null ? 1 : count + 1
+        );
     }
 
-    public int getTotalCount() {
-        // 스트림 활용
-        return orderMap.values().stream()
-                .mapToInt(OrderItem::getCount)
-                .sum();
+    public boolean isOrderEmpty() {
+        return orderMap.isEmpty();
     }
 
     public int getTotalPrice() {
-        // 스트림 활용
-        return orderMap.values().stream()
-                .mapToInt(OrderItem::getTotalPrice)
+        return orderMap.keySet().stream()
+                .mapToInt(key -> orderMap.get(key)*key.getPrice())
                 .sum();
     }
 
-    public List<OrderItem> getOrderList() {
-        return new ArrayList<>(orderMap.values());
+    public String getOrderListFormattedString() {
+        StringBuilder sb = new StringBuilder();
+        orderMap.forEach((key, count) ->
+                sb.append(String.format("(%s)\t %s\n", count, key.getFormattedString()))
+        );
+        return sb.toString();
     }
 }
