@@ -18,6 +18,7 @@ public class Kiosk {
             )
     );
 
+
     Order order = new Order();
 
     public Kiosk(Menu... menus) {
