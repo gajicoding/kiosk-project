@@ -15,4 +15,8 @@ class KioskScanner {
 
         return input;
     }
+
+    public void close() {
+        sc.close();
+    }
 }

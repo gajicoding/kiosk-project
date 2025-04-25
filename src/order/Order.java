@@ -14,8 +14,8 @@ public class Order {
         );
     }
 
-    public boolean isOrderEmpty() {
-        return orderMap.isEmpty();
+    public boolean isNotEmpty() {
+        return !orderMap.isEmpty();
     }
 
     public int getTotalPrice() {
@@ -27,7 +27,7 @@ public class Order {
     public String getOrderListFormattedString() {
         StringBuilder sb = new StringBuilder();
         orderMap.forEach((key, count) ->
-                sb.append(String.format("(%s)\t %s\n", count, key.getFormattedString()))
+                sb.append(String.format("w %,d (%s)\t %s\n", count*key.getPrice(), count, key.getFormattedString()))
         );
         return sb.toString();
     }

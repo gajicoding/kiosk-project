@@ -14,7 +14,7 @@ public class Main {
                 new MenuItem("Hamburger", 5400, "비프패티를 기반으로 야채가 들어간 기본버거")
         );
 
-        Menu drinkMenu  = new Menu("DRINKS",
+        Menu drinkMenu = new Menu("DRINKS",
                 new MenuItem("Coke  ", 1000, "콜라"),
                 new MenuItem("Sprite", 1000, "사이다"),
                 new MenuItem("Coffee", 1500, "커피"),

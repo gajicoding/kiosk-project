@@ -1,17 +1,26 @@
-package menu;
+package menu.command;
 
 import menu.type.MenuFunc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Menu implements MenuFunc {
+public class CommandMenu implements MenuFunc {
     final private String name;
-    private final List<MenuItem> items;
+    private final List<CommandMenuItem> items;
 
-    public Menu(String name, MenuItem... items) {
+    public CommandMenu(String name, CommandMenuItem... items) {
         this.name = name;
         this.items = new ArrayList<>(List.of(items));
+    }
+
+    public CommandMenu(String name) {
+        this.name = name;
+        this.items = new ArrayList<>();
+    }
+
+    public void addItem(CommandMenuItem item){
+        items.add(item);
     }
 
 
@@ -27,15 +36,9 @@ public class Menu implements MenuFunc {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<MenuItem> getItems() {
+    public List<CommandMenuItem> getItems() {
         return items;
     }
 
-    public MenuItem getMenuItem(int i) {
-        return items.get(i);
-    }
 
-//    public List<MenuItem> getMenuItems() {
-//        return items;
-//    }
 }

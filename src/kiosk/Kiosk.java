@@ -1,138 +1,208 @@
 package kiosk;
 
-import menu.Menu;
-import menu.MenuItem;
-import order.DiscountRule;
+import menu.*;
+import menu.command.CommandKey;
+import menu.command.CommandMenu;
+import menu.command.CommandMenuItem;
+import menu.type.ItemFunc;
+import menu.type.MenuFunc;
 import order.Order;
-import menu.OrderMenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 
 public class Kiosk {
-    List<Menu> menuList;
-    List<OrderMenuItem> orderMenu = new ArrayList<>(
-            List.of(
-                    new OrderMenuItem("Orders", "장바구니를 확인 후 주문합니다."),
-                    new OrderMenuItem("Cancel", "진행중인 주문을 취소합니다.")
-            )
-    );
+    private final KioskScanner scanner;
+    private final Map<String, Menu> menuMap;
+    private final Map<String, CommandMenu> orderMenuMap;
+    private final Order order;
 
+    Map<String, Integer> OptionNumMap;
+    Map<Integer, MenuFunc> selectOptionMap;
 
-    Order order = new Order();
+    CommandKey key;
+
+    int selectedNum;
 
     public Kiosk(Menu... menus) {
-        this.menuList = List.of(menus);
+        this.scanner = new KioskScanner();
+        this.OptionNumMap = new HashMap<>();
+        this.selectOptionMap = new HashMap<>();
+        this.order = new Order();
+        this.menuMap = new HashMap<>();
+        this.orderMenuMap = new HashMap<>();
+
+        for (Menu menu : menus) {
+            menuMap.put(menu.getName(), menu);
+        }
+        orderMenuMap.put(Const.ORDER, new CommandMenu(Const.ORDER,
+            new CommandMenuItem(CommandKey.SHOW_CART),
+            new CommandMenuItem(CommandKey.CANCEL)
+        ));
+        orderMenuMap.put(Const.ORDER_CONFIRM, new CommandMenu(Const.ORDER_CONFIRM,
+                new CommandMenuItem(CommandKey.ORDER),
+                new CommandMenuItem(CommandKey.ADD_MENU)
+        ));
+        orderMenuMap.put(Const.CART, new CommandMenu(Const.CART,
+                new CommandMenuItem(CommandKey.ADD_CART_CONFIRM),
+                new CommandMenuItem(CommandKey.ADD_CART_CANCEL)
+        ));
+
+        CommandMenu discountMenu = new CommandMenu(Const.DISCOUNT);
+        for(DiscountRule rule: DiscountRule.values()){
+            discountMenu.addItem(
+                    new CommandMenuItem(rule.getType(), rule.getPercentage()+"% 할인")
+            );
+        }
+        orderMenuMap.put(Const.DISCOUNT, discountMenu);
     }
 
     int totalPrice;
 
     public void start() throws RuntimeException {
-        // 스캐너 선언
-        KioskScanner scanner = new KioskScanner();
 
-        int i;
-        int selectedNum, selectedNum2;
+        int optionSize;
+        int totalPrice = 0;
+        Menu selectedCategory = null;
+        MenuItem selectedItem = null;
 
-        // 반복문 시작
+
+        loop:
         while(true) {
-            // 1. 카테고리 선택
-            i = 1;
-            System.out.println("[ MAIN MENU ]");
-            for(Menu menu : menuList){
-                System.out.printf("%d. %s\n", i++, menu.getName());
+            if(key == null){
+                key = CommandKey.SHOW_MAIN_MENU;
             }
-            System.out.println("0. 종료\t\t| 종료");
 
-            if(!order.isOrderEmpty()){
-                System.out.println("\n[ ORDER MENU ]");
-                for(OrderMenuItem menu : orderMenu){
-                    System.out.println((i++) +". "+ menu.getFormattedString());
+            switch (key) {
+                case EXIT -> {
+                    break loop;
                 }
-            }
+                case SHOW_MAIN_MENU -> {
+                    OptionNumMap.clear();
+                    selectOptionMap.clear();
 
-            selectedNum = scanner.getInputBetweenZeroAndNum(menuList.size() + orderMenu.size());
+                    // MAIN 메뉴 출력
+                    printMenu(menuMap);
+                    printExitMenu();
+                    putSelectNumOptionByMap(menuMap);
+                    optionSize = menuMap.size();
 
-
-            // Order Menu - Orders 선택시
-            if(selectedNum == 4) {
-                System.out.println("\n 아래와 같이 주문 하시겠습니까?\n");
-                System.out.println("[ Orders ]");
-                System.out.println(order.getOrderListFormattedString());
-
-                System.out.println("\n[ Total ]");
-                System.out.printf("w %,d\n\n", order.getTotalPrice());
-
-                System.out.println("1. 주문\t\t2. 메뉴판");
-                selectedNum2 = scanner.getInputBetweenZeroAndNum(2);
-
-                if(selectedNum2 == 1){
-                    i = 1;
-                    System.out.println("할인 정보를 입력해주세요.");
-                    for(DiscountRule rule: DiscountRule.values()){
-                        System.out.println((i++) +". "+rule.getFormattedString());
+                    if(order.isNotEmpty()) {
+                        // - 뒤에 이어서 ORDER 메뉴 출력
+                        CommandMenu cartMenu = orderMenuMap.get(Const.ORDER);
+                        printMenuItems(cartMenu, menuMap.size()+1);
+                        putSelectNumOptionByMenu(cartMenu, menuMap.size()+1);
+                        optionSize += cartMenu.size();
                     }
-                    System.out.println();
 
+                    selectedNum = scanner.getInputBetweenZeroAndNum(optionSize);
 
-                    selectedNum = scanner.getInputBetweenZeroAndNum(DiscountRule.values().length);
+                    if(selectedNum == Const.EXIT_NUNMBER){
+                        key = CommandKey.EXIT;
+                        continue;
+                    }
 
-                    // TODO: 수정 원하는데 다른 방법을 모르겠음
-                    totalPrice = DiscountRule.values()[selectedNum - 1]
-                                        .discountApply(order.getTotalPrice());
+                    key = getCommandKeyBySelectedNum(selectedNum);
 
+                    if(key == null) {
+                        key = CommandKey.SELECT_MAIN;
+                    }
+                    continue;
+                }
+                case SELECT_MAIN -> {
+                    String name = selectOptionMap.get(selectedNum).getName();
+                    selectedCategory = menuMap.get(name);
 
+                    OptionNumMap.clear();
+                    selectOptionMap.clear();
+
+                    printMenuItems(selectedCategory, 1);
+                    printExitMenu();
+                    putSelectNumOptionByMenu(selectedCategory, 1);
+                    optionSize = selectedCategory.size();
+
+                    selectedNum = scanner.getInputBetweenZeroAndNum(optionSize);
+                    key = CommandKey.ASK_ADD_CART;
+                    continue;
+                }
+                case ASK_ADD_CART -> {
+                    selectedItem = Objects.requireNonNull(selectedCategory).getMenuItem(selectedNum - 1);
+                    System.out.println("선택한 메뉴: " + "\"" + selectedItem.getFormattedString() + "\"\n");
+
+                    CommandMenu cartMenu = orderMenuMap.get(Const.CART);
+                    printMenuItems(cartMenu, 1);
+                    putSelectNumOptionByMenu(cartMenu, 1);
+                    optionSize = cartMenu.size();
+
+                    selectedNum = scanner.getInputBetweenZeroAndNum(optionSize);
+
+                    key = getCommandKeyBySelectedNum(selectedNum);
+                    continue;
+                }
+                case ADD_CART_CONFIRM -> {
+                    order.addOrderItem(selectedItem);
+                    System.out.println("이 장바구니에 추가되었습니다.");
+                    key = null;
+                }
+                case ADD_CART_CANCEL -> {
+                    System.out.println("취소되었습니다.");
+                    key = null;
+                    continue;
+                }
+                case ADD_MENU -> {
+                    key = null;
+                    continue;
+                }
+                case CANCEL -> {
+                    order.reset();
+                    System.out.println("주문이 취소되었습니다.");
+                    key = null;
+                    continue;
+                }
+                case SHOW_CART -> {
+                    OptionNumMap.clear();
+                    selectOptionMap.clear();
+
+                    printOrderChoice();
+
+                    CommandMenu confirmMenu = orderMenuMap.get(Const.ORDER_CONFIRM);
+                    printMenuItems(confirmMenu, 1);
+                    putSelectNumOptionByMenu(confirmMenu, 1);
+                    optionSize = confirmMenu.size();
+
+                    selectedNum = scanner.getInputBetweenZeroAndNum(optionSize);
+
+                    key = getCommandKeyBySelectedNum(selectedNum);
+                    continue;
+                }
+                case ORDER -> {
+                    CommandMenu discountMenu = orderMenuMap.get(Const.DISCOUNT);
+                    printMenuItems(discountMenu, 1);
+                    putSelectNumOptionByMenu(discountMenu, 1);
+                    optionSize = discountMenu.size();
+
+                    selectedNum = scanner.getInputBetweenZeroAndNum(optionSize);
+
+                    DiscountRule discountRule = DiscountRule.selectNumOf(selectedNum-1);
+                    totalPrice = discountRule.discountApply(order.getTotalPrice());
+
+                    key = CommandKey.FINISH;
+                    continue;
+                }
+                case FINISH -> {
                     System.out.printf("주문이 완료되었습니다. 금액은 w %,d 입니다.\n", totalPrice);
-                    break;
-                } else if(selectedNum2 == 2){
+                    order.reset();
+                    key = null;
                     continue;
                 }
             }
 
-
-            if(selectedNum == 0 || selectedNum == i-1){   // 0이면 종료
-                break;
-            }
-
-            Menu selectedCategory = menuList.get(selectedNum - 1);
-
-
-            // 2. 제품 선택
-            i = 1;
-            System.out.println("\n[ "+ selectedCategory.getName() +" MENU ]");
-            for(MenuItem menuItem: selectedCategory.getMenuItems()){
-                System.out.println((i++) +". "+ menuItem.getFormattedString());
-            }
-            System.out.println("0. 뒤로가기\t\t| 종료");
-
-
-            selectedNum = scanner.getInputBetweenZeroAndNum(selectedCategory.getListSize());
-            if(selectedNum == 0){   // 0이면 뒤로가기
-                continue;
-            }
-
-
-            MenuItem selectedItem = selectedCategory.getMenuItem(selectedNum - 1);
-            System.out.println("선택한 메뉴: " + selectedItem.getFormattedString() +"\n");
-
-            System.out.println("\"" + selectedItem.getFormattedString() + "\"" );
-            System.out.println("위 메뉴를 장바구니에 추가하시겠습니까?");
-            System.out.println("1. 확인\t\t2. 취소");
-
-            selectedNum = scanner.getInputBetweenZeroAndNum(3);
-            if(selectedNum == 1){
-                order.addOrderItem(selectedItem);
-                System.out.println("이 장바구니에 추가되었습니다.");
-            } else if(selectedNum == 2) {
-                System.out.println("취소되었습니다.");
-            } else {
-                continue;
-            }
-
             System.out.println();
-
         }
 
         System.out.println("프로그램을 종료합니다.");
+        scanner.close();
     }
 }
