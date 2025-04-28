@@ -22,7 +22,6 @@ public class Kiosk {
     private final Order order;
     CommandKey key;
     int selectedNum;
-//    KioskState state;
 
     private final Map<String, Menu> menuMap;
     private final Map<String, CommandMenu> orderMenuMap;
@@ -35,7 +34,6 @@ public class Kiosk {
 
     public Kiosk(Menu... menus) {
         this.scanner = new KioskScanner();
-//        this.state = new KioskState(menus);
         this.order = new Order();
 
         this.OptionNumMap = new HashMap<>();
