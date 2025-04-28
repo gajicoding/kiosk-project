@@ -39,7 +39,6 @@ public class Kiosk {
         }
 
         setOrderMenuMap();
-
     }
 
     private void setOrderMenuMap() {
@@ -69,7 +68,6 @@ public class Kiosk {
 
 
     public void start() throws RuntimeException {
-
         int optionSize;
         int totalPrice = 0;
         Menu selectedCategory = null;
@@ -86,6 +84,7 @@ public class Kiosk {
                 case EXIT -> {
                     break loop;
                 }
+
                 case SHOW_MAIN -> {
                     OptionNumMap.clear();
                     selectOptionMap.clear();
@@ -146,7 +145,6 @@ public class Kiosk {
                     key = getCommandKeyBySelectedNum(selectedNum);
                 }
 
-
                 case MAIN_SHOW_CART_OPTION -> {
                     OptionNumMap.clear();
                     selectOptionMap.clear();
@@ -188,6 +186,7 @@ public class Kiosk {
 
                     key = CommandKey.COMPLETE;
                 }
+
                 case CART_ADD_MENU_OPTION -> key = null;
 
                 case CHOICE_ADD_CART_OPTION -> {
@@ -195,6 +194,7 @@ public class Kiosk {
                     System.out.println(Objects.requireNonNull(selectedItem).getName() + " 음식이 장바구니에 추가되었습니다.");
                     key = null;
                 }
+
                 case CHOICE_CANCEL_OPTION -> {
                     System.out.println("취소되었습니다.");
                     key = null;
@@ -206,7 +206,6 @@ public class Kiosk {
                     key = null;
                 }
             }
-
         }
 
         System.out.println("프로그램을 종료합니다.");
