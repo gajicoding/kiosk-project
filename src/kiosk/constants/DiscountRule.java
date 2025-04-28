@@ -1,4 +1,4 @@
-package kiosk;
+package kiosk.constants;
 
 import java.util.Arrays;
 

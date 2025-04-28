@@ -1,8 +1,8 @@
-package kiosk;
+package kiosk.util;
 
 import java.util.Scanner;
 
-class KioskScanner {
+public class KioskScanner {
     private final Scanner sc = new Scanner(System.in);
 
     public int getInputBetweenAAndB(int a, int b) throws RuntimeException{
