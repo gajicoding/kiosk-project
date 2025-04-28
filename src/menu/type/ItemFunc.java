@@ -1,7 +1,7 @@
 package menu.type;
 
 public interface ItemFunc {
-    String getName();
+    String getKey();
 
     String getFormattedString();
 }

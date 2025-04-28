@@ -5,50 +5,32 @@ import kiosk.Const;
 
 
 public enum CommandKey {
-    // 장바구니 확인
-    SHOW_CART("Cart  ", "장바구니를 확인합니다."),
-    CANCEL("Cancel", "진행중인 주문을 취소합니다."),
-
-    // 주문
-    ORDER("Order", "주문한다."),
-    ADD_MENU("Add Menu", "메뉴를 추가한다."),
-
-    ADD_CART_CONFIRM("Add to Cart", "장바구니에 추가 합니다."),
-    ADD_CART_CANCEL("Cancel", "취소한다."),
-
-    FINISH(Const.FINISH),
-
+    SHOW_MAIN(Const.SHOW_MAIN),
+    SELECT_MAIN_MENU(Const.SELECT_MAIN_MENU),
+    ASK_ADD_CART(Const.ASK_ADD_CART),
+    COMPLETE(Const.COMPLETE),
     EXIT(Const.EXIT),
 
-    SHOW_MAIN_MENU(Const.SHOW_MAIN_MENU),
-    SELECT_MAIN(Const.SELECT_MAIN),
-    ASK_ADD_CART(Const.ASK_ADD_CART),
-    ADD_CART(Const.ADD_CART);
+    // MAIN
+    MAIN_SHOW_CART_OPTION(Const.MAIN_SHOW_CART_OPTION),
+    MAIN_CANCEL_OPTION(Const.MAIN_CANCEL_OPTION),
+
+    // CART
+    CART_ORDER_OPTION(Const.CART_ORDER_OPTION),
+    CART_ADD_MENU_OPTION(Const.CART_ADD_MENU_OPTION),
+
+    // CHOICE
+    CHOICE_ADD_CART_OPTION(Const.CHOICE_ADD_CART_OPTION),
+    CHOICE_CANCEL_OPTION(Const.CHOICE_CANCEL_OPTION);
 
 
+    private final String key;
 
-
-    private final String name;
-    private final String description;
-
-    CommandKey(String name, String description) {
-        this.name = name;
-        this.description = description;
+    CommandKey(String key) {
+        this.key = key;
     }
 
-    CommandKey(String name) {
-        this.name = name;
-        this.description = "";
+    public String getKey() {
+        return key;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-
-
 }

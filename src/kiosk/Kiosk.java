@@ -37,27 +37,36 @@ public class Kiosk {
         for (Menu menu : menus) {
             menuMap.put(menu.getName(), menu);
         }
-        orderMenuMap.put(Const.ORDER, new CommandMenu(Const.ORDER,
-            new CommandMenuItem(CommandKey.SHOW_CART),
-            new CommandMenuItem(CommandKey.CANCEL)
+
+        setOrderMenuMap();
+
+    }
+
+    private void setOrderMenuMap() {
+        orderMenuMap.put(Const.MAIN_GROUP, new CommandMenu(Const.DISPLAY_MAIN_GROUP,
+                new CommandMenuItem(CommandKey.MAIN_SHOW_CART_OPTION, "Cart  ", "장바구니를 확인합니다."),
+                new CommandMenuItem(CommandKey.MAIN_CANCEL_OPTION, "Cancel", "진행중인 주문을 취소합니다.")
         ));
-        orderMenuMap.put(Const.ORDER_CONFIRM, new CommandMenu(Const.ORDER_CONFIRM,
-                new CommandMenuItem(CommandKey.ORDER),
-                new CommandMenuItem(CommandKey.ADD_MENU)
+        orderMenuMap.put(Const.CART_GROUP, new CommandMenu(Const.DISPLAY_CART_GROUP,
+                new CommandMenuItem(CommandKey.CART_ORDER_OPTION, "Order", "주문한다."),
+                new CommandMenuItem(CommandKey.CART_ADD_MENU_OPTION, "Add Menu", "메뉴를 추가한다.")
         ));
-        orderMenuMap.put(Const.CART, new CommandMenu(Const.CART,
-                new CommandMenuItem(CommandKey.ADD_CART_CONFIRM),
-                new CommandMenuItem(CommandKey.ADD_CART_CANCEL)
+        orderMenuMap.put(Const.CHOICE_GROUP, new CommandMenu(Const.DISPLAY_CHOICE_GROUP,
+                new CommandMenuItem(CommandKey.CHOICE_ADD_CART_OPTION, "Add to Cart", "장바구니에 추가 합니다."),
+                new CommandMenuItem(CommandKey.CHOICE_CANCEL_OPTION, "Cancel", "취소한다.")
         ));
 
-        CommandMenu discountMenu = new CommandMenu(Const.DISCOUNT);
+        CommandMenu discountMenu = new CommandMenu(Const.DISPLAY_DISCOUNT_GROUP);
+
         for(DiscountRule rule: DiscountRule.values()){
             discountMenu.addItem(
                     new CommandMenuItem(rule.getType(), rule.getPercentage()+"% 할인")
             );
         }
-        orderMenuMap.put(Const.DISCOUNT, discountMenu);
+        orderMenuMap.put(Const.DISCOUNT_GROUP, discountMenu);
     }
+
+
 
     public void start() throws RuntimeException {
 
@@ -70,34 +79,33 @@ public class Kiosk {
         loop:
         while(true) {
             if(key == null){
-                key = CommandKey.SHOW_MAIN_MENU;
+                key = CommandKey.SHOW_MAIN;
             }
 
             switch (key) {
                 case EXIT -> {
                     break loop;
                 }
-                case SHOW_MAIN_MENU -> {
+                case SHOW_MAIN -> {
                     OptionNumMap.clear();
                     selectOptionMap.clear();
 
                     // MAIN 메뉴 출력
-                    printMenu(menuMap);
-                    printExitMenu();
+                    printMainMenu(menuMap);
                     putSelectNumOptionByMap(menuMap);
                     optionSize = menuMap.size();
 
                     if(order.isNotEmpty()) {
-                        // - 뒤에 이어서 ORDER 메뉴 출력
-                        CommandMenu cartMenu = orderMenuMap.get(Const.ORDER);
-                        printMenuItems(cartMenu, menuMap.size()+1);
-                        putSelectNumOptionByMenu(cartMenu, menuMap.size()+1);
-                        optionSize += cartMenu.size();
+                        // 뒤에 이어서 ORDER 메뉴 출력
+                        CommandMenu mainMenu = orderMenuMap.get(Const.MAIN_GROUP);
+                        printMenuItems(mainMenu, menuMap.size()+1);
+                        putSelectNumOptionByMenu(mainMenu, menuMap.size()+1);
+                        optionSize += mainMenu.size();
                     }
 
-                    selectedNum = scanner.getInputBetweenZeroAndNum(optionSize);
+                    selectedNum = scanner.getInputBetweenAAndB(0, optionSize);
 
-                    if(selectedNum == Const.EXIT_NUNMBER){
+                    if(selectedNum == Const.EXIT_NUMBER){
                         key = CommandKey.EXIT;
                         continue;
                     }
@@ -105,11 +113,11 @@ public class Kiosk {
                     key = getCommandKeyBySelectedNum(selectedNum);
 
                     if(key == null) {
-                        key = CommandKey.SELECT_MAIN;
+                        key = CommandKey.SELECT_MAIN_MENU;
                     }
-                    continue;
                 }
-                case SELECT_MAIN -> {
+
+                case SELECT_MAIN_MENU -> {
                     String name = selectOptionMap.get(selectedNum).getName();
                     selectedCategory = menuMap.get(name);
 
@@ -117,87 +125,88 @@ public class Kiosk {
                     selectOptionMap.clear();
 
                     printMenuItems(selectedCategory, 1);
-                    printExitMenu();
                     putSelectNumOptionByMenu(selectedCategory, 1);
                     optionSize = selectedCategory.size();
 
-                    selectedNum = scanner.getInputBetweenZeroAndNum(optionSize);
+                    selectedNum = scanner.getInputBetweenAAndB(1, optionSize);
                     key = CommandKey.ASK_ADD_CART;
-                    continue;
                 }
+
                 case ASK_ADD_CART -> {
                     selectedItem = Objects.requireNonNull(selectedCategory).getMenuItem(selectedNum - 1);
                     System.out.println("선택한 메뉴: " + "\"" + selectedItem.getFormattedString() + "\"\n");
 
-                    CommandMenu cartMenu = orderMenuMap.get(Const.CART);
+                    CommandMenu choiceMenu = orderMenuMap.get(Const.CHOICE_GROUP);
+                    printMenuItems(choiceMenu, 1);
+                    putSelectNumOptionByMenu(choiceMenu, 1);
+                    optionSize = choiceMenu.size();
+
+                    selectedNum = scanner.getInputBetweenAAndB(1, optionSize);
+
+                    key = getCommandKeyBySelectedNum(selectedNum);
+                }
+
+
+                case MAIN_SHOW_CART_OPTION -> {
+                    OptionNumMap.clear();
+                    selectOptionMap.clear();
+
+                    System.out.println("\n아래와 같이 주문 하시겠습니까?\n");
+                    System.out.println("[ Orders ]");
+                    System.out.print(order.getOrderListFormattedString());
+
+                    System.out.println("\n[ Total ]");
+                    System.out.printf("w %,d\n", order.getTotalPrice());
+
+
+                    CommandMenu cartMenu = orderMenuMap.get(Const.CART_GROUP);
                     printMenuItems(cartMenu, 1);
                     putSelectNumOptionByMenu(cartMenu, 1);
                     optionSize = cartMenu.size();
 
-                    selectedNum = scanner.getInputBetweenZeroAndNum(optionSize);
+                    selectedNum = scanner.getInputBetweenAAndB(1, optionSize);
 
                     key = getCommandKeyBySelectedNum(selectedNum);
-                    continue;
                 }
-                case ADD_CART_CONFIRM -> {
-                    order.addOrderItem(selectedItem);
-                    System.out.println("이 장바구니에 추가되었습니다.");
-                    key = null;
-                }
-                case ADD_CART_CANCEL -> {
-                    System.out.println("취소되었습니다.");
-                    key = null;
-                    continue;
-                }
-                case ADD_MENU -> {
-                    key = null;
-                    continue;
-                }
-                case CANCEL -> {
+
+                case MAIN_CANCEL_OPTION -> {
                     order.reset();
                     System.out.println("주문이 취소되었습니다.");
                     key = null;
-                    continue;
                 }
-                case SHOW_CART -> {
-                    OptionNumMap.clear();
-                    selectOptionMap.clear();
 
-                    printOrderChoice();
-
-                    CommandMenu confirmMenu = orderMenuMap.get(Const.ORDER_CONFIRM);
-                    printMenuItems(confirmMenu, 1);
-                    putSelectNumOptionByMenu(confirmMenu, 1);
-                    optionSize = confirmMenu.size();
-
-                    selectedNum = scanner.getInputBetweenZeroAndNum(optionSize);
-
-                    key = getCommandKeyBySelectedNum(selectedNum);
-                    continue;
-                }
-                case ORDER -> {
-                    CommandMenu discountMenu = orderMenuMap.get(Const.DISCOUNT);
+                case CART_ORDER_OPTION -> {
+                    CommandMenu discountMenu = orderMenuMap.get(Const.DISCOUNT_GROUP);
                     printMenuItems(discountMenu, 1);
                     putSelectNumOptionByMenu(discountMenu, 1);
                     optionSize = discountMenu.size();
 
-                    selectedNum = scanner.getInputBetweenZeroAndNum(optionSize);
+                    selectedNum = scanner.getInputBetweenAAndB(1, optionSize);
 
                     DiscountRule discountRule = DiscountRule.selectNumOf(selectedNum-1);
                     totalPrice = discountRule.discountApply(order.getTotalPrice());
 
-                    key = CommandKey.FINISH;
-                    continue;
+                    key = CommandKey.COMPLETE;
                 }
-                case FINISH -> {
+                case CART_ADD_MENU_OPTION -> key = null;
+
+                case CHOICE_ADD_CART_OPTION -> {
+                    order.addOrderItem(selectedItem);
+                    System.out.println(Objects.requireNonNull(selectedItem).getName() + " 음식이 장바구니에 추가되었습니다.");
+                    key = null;
+                }
+                case CHOICE_CANCEL_OPTION -> {
+                    System.out.println("취소되었습니다.");
+                    key = null;
+                }
+
+                case COMPLETE -> {
                     System.out.printf("주문이 완료되었습니다. 금액은 w %,d 입니다.\n", totalPrice);
                     order.reset();
                     key = null;
-                    continue;
                 }
             }
 
-            System.out.println();
         }
 
         System.out.println("프로그램을 종료합니다.");
@@ -207,12 +216,14 @@ public class Kiosk {
 
 
 
-    private <T extends MenuFunc> void printMenu(Map<String, T> menuMap) {
+    private void printMainMenu(Map<String, Menu> menuMap) {
         int startIndex = 1;
         System.out.println("\n[ " + "MAIN" + " ]");
-        for (T menu : menuMap.values()) {
+        for (Menu menu : menuMap.values()) {
             System.out.println(startIndex++ + ". " + menu.getName());
         }
+
+        System.out.println("0. 종료\t\t| 종료");
     }
 
     private <T extends MenuFunc> void printMenuItems(T menu, int startIndex) {
@@ -222,9 +233,9 @@ public class Kiosk {
         }
     }
 
-    private <T extends MenuFunc> void putSelectNumOptionByMap(Map<String, T> menuMap) {
+    private void putSelectNumOptionByMap(Map<String, Menu> menuMap) {
         int startIndex = 1;
-        for (T menu : menuMap.values()) {
+        for (Menu menu : menuMap.values()) {
             OptionNumMap.put(menu.getName(), startIndex);
             selectOptionMap.put(startIndex++, menu);
         }
@@ -232,33 +243,17 @@ public class Kiosk {
 
     private <T extends MenuFunc> void putSelectNumOptionByMenu(T menu, int startIndex) {
         for (ItemFunc item : menu.getItems()) {
-            OptionNumMap.put(item.getName(), startIndex);
+            OptionNumMap.put(item.getKey(), startIndex);
             selectOptionMap.put(startIndex++, menu);
         }
     }
 
-
-    private void printExitMenu() {
-        System.out.println("0. 종료\t\t| 종료");
-    }
-
-    private void printOrderChoice(){
-        System.out.println("\n 아래와 같이 주문 하시겠습니까?\n");
-        System.out.println("[ Orders ]");
-        System.out.print(order.getOrderListFormattedString());
-
-        System.out.println("\n[ Total ]");
-        System.out.printf("w %,d\n", order.getTotalPrice());
-    }
-
     private CommandKey getCommandKeyBySelectedNum(int selectedNum) {
-        for (CommandKey key : CommandKey.values()) {
-            if (OptionNumMap.getOrDefault(key.getName(), -1) == selectedNum) {
-                return key;
+        for (CommandKey commandKey: CommandKey.values()) {
+            if (OptionNumMap.getOrDefault(commandKey.getKey(), -1) == selectedNum) {
+                return commandKey;
             }
         }
         return null;
     }
-
-
 }

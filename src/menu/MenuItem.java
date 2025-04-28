@@ -13,13 +13,16 @@ public class MenuItem implements ItemFunc {
         this.description = description;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public int getPrice() {
         return price;
     }
 
-
     @Override
-    public String getName() {
+    public String getKey() {
         return name;
     }
 

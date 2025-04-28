@@ -14,7 +14,6 @@ public class Menu implements MenuFunc {
         this.items = new ArrayList<>(List.of(items));
     }
 
-
     @Override
     public String getName() {
         return name;
