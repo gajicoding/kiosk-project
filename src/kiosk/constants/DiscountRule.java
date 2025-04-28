@@ -28,10 +28,6 @@ public enum DiscountRule {
         return totalPrice - totalPrice*percentage/100;
     }
 
-//    public String getFormattedString() {
-//        return String.format("%s\t: %d%%", type, percentage);
-//    }
-
     public static DiscountRule selectNumOf(int num){
         return Arrays.stream(DiscountRule.values())
                 .filter(rule -> rule.ordinal() == num)

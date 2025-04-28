@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class KioskScanner {
     private final Scanner sc = new Scanner(System.in);
 
-    public int getInputBetweenAAndB(int a, int b) throws RuntimeException{
+    public int getInputBetweenAAndB(int a, int b) {
         int input = sc.nextInt();
         sc.nextLine(); // 버퍼 비우기
 

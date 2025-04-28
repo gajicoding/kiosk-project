@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandMenu implements MenuFunc {
-    final private String name;
+    private final String name;
     private final List<CommandMenuItem> items;
 
     public CommandMenu(String name, CommandMenuItem... items) {

@@ -25,10 +25,9 @@ public class Kiosk {
 
     private final Map<String, Menu> menuMap;
     private final Map<String, CommandMenu> orderMenuMap;
-    Map<String, Integer> OptionNumMap;
+    Map<String, Integer> optionNumMap;
     Map<Integer, MenuFunc> selectOptionMap;
 
-    int optionSize;
     Menu selectedCategory = null;
     MenuItem selectedItem = null;
 
@@ -36,7 +35,7 @@ public class Kiosk {
         this.scanner = new KioskScanner();
         this.order = new Order();
 
-        this.OptionNumMap = new HashMap<>();
+        this.optionNumMap = new HashMap<>();
         this.selectOptionMap = new HashMap<>();
 
         this.menuMap = new HashMap<>();
@@ -49,7 +48,7 @@ public class Kiosk {
     }
 
 
-    public void start() throws RuntimeException {
+    public void start() {
 
         while(true) {
             if (key == null) {
@@ -62,7 +61,7 @@ public class Kiosk {
 
             switch (key) {
                 case MAIN -> {
-                    int selectedNum = handleMainMenu();
+                    selectedNum = handleMainMenu();
 
                     if(selectedNum == Const.EXIT_NUMBER){
                         key = CommandKey.EXIT;
@@ -92,7 +91,7 @@ public class Kiosk {
                 }
 
                 case CANCEL_SELECT -> {
-                    cancleSelect();
+                    cancelSelect();
                     key = CommandKey.MAIN;
                 }
 
@@ -118,6 +117,8 @@ public class Kiosk {
                     cancelOrder();
                     key = null;
                 }
+
+                default -> throw new IllegalStateException("유효하지 않은 key 값: " + key);
             }
         }
 
@@ -168,7 +169,7 @@ public class Kiosk {
 
         printMenuItems(selectedCategory, 1);
         putSelectNumOptionByMenu(selectedCategory, 1);
-        optionSize = selectedCategory.size();
+        int optionSize = selectedCategory.size();
 
         selectedNum = scanner.getInputBetweenAAndB(1, optionSize);
     }
@@ -184,7 +185,7 @@ public class Kiosk {
         CommandMenu choiceMenu = orderMenuMap.get(Const.CHOICE_GROUP);
         printMenuItems(choiceMenu, 1);
         putSelectNumOptionByMenu(choiceMenu, 1);
-        optionSize = choiceMenu.size();
+        int optionSize = choiceMenu.size();
 
         selectedNum = scanner.getInputBetweenAAndB(1, optionSize);
 
@@ -196,7 +197,7 @@ public class Kiosk {
         System.out.println(Objects.requireNonNull(selectedItem).getName() + " - 장바구니에 추가되었습니다.");
     }
 
-    private void cancleSelect() {
+    private void cancelSelect() {
         System.out.println("선택을 취소합니다.");
     }
 
@@ -207,17 +208,17 @@ public class Kiosk {
     private int handleCart() {
         clearOptions();
 
-        System.out.println("\n아래와 같이 주문 하시겠습니까?\n");
+        System.out.println("%n아래와 같이 주문 하시겠습니까?%n");
         System.out.println("[ Orders ]");
         System.out.print(order.getOrderListFormattedString());
 
-        System.out.println("\n[ Total ]");
-        System.out.printf("w %,d\n", order.getTotalPrice());
+        System.out.println("%n[ Total ]");
+        System.out.printf("w %,d%n", order.getTotalPrice());
 
         CommandMenu cartMenu = orderMenuMap.get(Const.CART_GROUP);
         printMenuItems(cartMenu, 1);
         putSelectNumOptionByMenu(cartMenu, 1);
-        optionSize = cartMenu.size();
+        int optionSize = cartMenu.size();
 
         selectedNum = scanner.getInputBetweenAAndB(1, optionSize);
 
@@ -237,7 +238,7 @@ public class Kiosk {
         int totalPrice = order.getTotalPrice();
         int discountedPrice = applyDiscount(totalPrice);
 
-        System.out.printf("주문이 완료되었습니다. 금액은 w %,d 입니다.\n", discountedPrice);
+        System.out.printf("주문이 완료되었습니다. 금액은 w %,d 입니다.%n", discountedPrice);
         order.reset();
 
     }
@@ -245,7 +246,7 @@ public class Kiosk {
         CommandMenu discountMenu = orderMenuMap.get(Const.DISCOUNT_GROUP);
         printMenuItems(discountMenu, 1);
         putSelectNumOptionByMenu(discountMenu, 1);
-        optionSize = discountMenu.size();
+        int optionSize = discountMenu.size();
 
         selectedNum = scanner.getInputBetweenAAndB(1, optionSize);
 
@@ -301,26 +302,26 @@ public class Kiosk {
     private void putSelectNumOptionByMap(Map<String, Menu> menuMap) {
         int startIndex = 1;
         for (Menu menu : menuMap.values()) {
-            OptionNumMap.put(menu.getName(), startIndex);
+            optionNumMap.put(menu.getName(), startIndex);
             selectOptionMap.put(startIndex++, menu);
         }
     }
 
     private <T extends MenuFunc> void putSelectNumOptionByMenu(T menu, int startIndex) {
         for (ItemFunc item : menu.getItems()) {
-            OptionNumMap.put(item.getKey(), startIndex);
+            optionNumMap.put(item.getKey(), startIndex);
             selectOptionMap.put(startIndex++, menu);
         }
     }
 
     private void clearOptions() {
-        OptionNumMap.clear();
+        optionNumMap.clear();
         selectOptionMap.clear();
     }
 
     private CommandKey getCommandKeyBySelectedNum(int selectedNum) {
         for (CommandKey commandKey: CommandKey.values()) {
-            if (OptionNumMap.getOrDefault(commandKey.getKey(), -1) == selectedNum) {
+            if (optionNumMap.getOrDefault(commandKey.getKey(), -1) == selectedNum) {
                 return commandKey;
             }
         }

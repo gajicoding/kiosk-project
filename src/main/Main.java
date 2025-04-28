@@ -1,3 +1,5 @@
+package main;
+
 import kiosk.Kiosk;
 import menu.product.Menu;
 import menu.product.MenuItem;
@@ -21,14 +23,14 @@ public class Main {
                 new MenuItem("Water", 500, "물")
         );
 
-        Menu DessertMenu  = new Menu("DESSERTS",
+        Menu dessertMenu  = new Menu("DESSERTS",
                 new MenuItem("Matcha Cookie", 3000, "말차 쿠키"),
                 new MenuItem("Chocolate Cookie", 2500, "초코 쿠키")
         );
 
 
         // Kiosk 객체 생성
-        Kiosk kiosk = new Kiosk(burgersMenu, drinkMenu, DessertMenu);
+        Kiosk kiosk = new Kiosk(burgersMenu, drinkMenu, dessertMenu);
 
 
         // Kiosk 내 시작하는 함수 호출

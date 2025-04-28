@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Menu implements MenuFunc {
-    final private String name;
+    private final String name;
     private final List<MenuItem> items;
 
     public Menu(String name, MenuItem... items) {
@@ -33,8 +33,4 @@ public class Menu implements MenuFunc {
     public MenuItem getMenuItem(int i) {
         return items.get(i);
     }
-
-//    public List<MenuItem> getMenuItems() {
-//        return items;
-//    }
 }
