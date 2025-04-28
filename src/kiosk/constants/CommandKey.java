@@ -1,8 +1,4 @@
-package menu.command;
-
-
-import kiosk.Const;
-
+package kiosk.constants;
 
 public enum CommandKey {
     SHOW_MAIN(Const.SHOW_MAIN),

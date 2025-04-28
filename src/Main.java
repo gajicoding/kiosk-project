@@ -1,6 +1,6 @@
 import kiosk.Kiosk;
-import menu.Menu;
-import menu.MenuItem;
+import menu.product.Menu;
+import menu.product.MenuItem;
 
 public class Main {
     public static void main(String[] args) {

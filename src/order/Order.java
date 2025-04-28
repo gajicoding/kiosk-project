@@ -1,6 +1,6 @@
 package order;
 
-import menu.MenuItem;
+import menu.product.MenuItem;
 
 import java.util.*;
 

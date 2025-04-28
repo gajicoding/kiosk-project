@@ -1,9 +1,11 @@
 package kiosk;
 
-import menu.*;
-import menu.command.CommandKey;
+import kiosk.constants.CommandKey;
+import kiosk.constants.Const;
 import menu.command.CommandMenu;
 import menu.command.CommandMenuItem;
+import menu.product.Menu;
+import menu.product.MenuItem;
 import menu.type.ItemFunc;
 import menu.type.MenuFunc;
 import order.Order;
@@ -40,31 +42,6 @@ public class Kiosk {
 
         setOrderMenuMap();
     }
-
-    private void setOrderMenuMap() {
-        orderMenuMap.put(Const.MAIN_GROUP, new CommandMenu(Const.DISPLAY_MAIN_GROUP,
-                new CommandMenuItem(CommandKey.MAIN_SHOW_CART_OPTION, "Cart  ", "장바구니를 확인합니다."),
-                new CommandMenuItem(CommandKey.MAIN_CANCEL_OPTION, "Cancel", "진행중인 주문을 취소합니다.")
-        ));
-        orderMenuMap.put(Const.CART_GROUP, new CommandMenu(Const.DISPLAY_CART_GROUP,
-                new CommandMenuItem(CommandKey.CART_ORDER_OPTION, "Order", "주문한다."),
-                new CommandMenuItem(CommandKey.CART_ADD_MENU_OPTION, "Add Menu", "메뉴를 추가한다.")
-        ));
-        orderMenuMap.put(Const.CHOICE_GROUP, new CommandMenu(Const.DISPLAY_CHOICE_GROUP,
-                new CommandMenuItem(CommandKey.CHOICE_ADD_CART_OPTION, "Add to Cart", "장바구니에 추가 합니다."),
-                new CommandMenuItem(CommandKey.CHOICE_CANCEL_OPTION, "Cancel", "취소한다.")
-        ));
-
-        CommandMenu discountMenu = new CommandMenu(Const.DISPLAY_DISCOUNT_GROUP);
-
-        for(DiscountRule rule: DiscountRule.values()){
-            discountMenu.addItem(
-                    new CommandMenuItem(rule.getType(), rule.getPercentage()+"% 할인")
-            );
-        }
-        orderMenuMap.put(Const.DISCOUNT_GROUP, discountMenu);
-    }
-
 
 
     public void start() throws RuntimeException {
@@ -213,7 +190,28 @@ public class Kiosk {
     }
 
 
+    private void setOrderMenuMap() {
+        orderMenuMap.put(Const.MAIN_GROUP, new CommandMenu(Const.DISPLAY_MAIN_GROUP,
+                new CommandMenuItem(CommandKey.MAIN_SHOW_CART_OPTION, "Cart  ", "장바구니를 확인합니다."),
+                new CommandMenuItem(CommandKey.MAIN_CANCEL_OPTION, "Cancel", "진행중인 주문을 취소합니다.")
+        ));
+        orderMenuMap.put(Const.CART_GROUP, new CommandMenu(Const.DISPLAY_CART_GROUP,
+                new CommandMenuItem(CommandKey.CART_ORDER_OPTION, "Order", "주문한다."),
+                new CommandMenuItem(CommandKey.CART_ADD_MENU_OPTION, "Add Menu", "메뉴를 추가한다.")
+        ));
+        orderMenuMap.put(Const.CHOICE_GROUP, new CommandMenu(Const.DISPLAY_CHOICE_GROUP,
+                new CommandMenuItem(CommandKey.CHOICE_ADD_CART_OPTION, "Add to Cart", "장바구니에 추가 합니다."),
+                new CommandMenuItem(CommandKey.CHOICE_CANCEL_OPTION, "Cancel", "취소한다.")
+        ));
 
+        CommandMenu discountMenu = new CommandMenu(Const.DISPLAY_DISCOUNT_GROUP);
+        for(DiscountRule rule: DiscountRule.values()){
+            discountMenu.addItem(
+                    new CommandMenuItem(rule.getType(), rule.getPercentage()+"% 할인")
+            );
+        }
+        orderMenuMap.put(Const.DISCOUNT_GROUP, discountMenu);
+    }
 
     private void printMainMenu(Map<String, Menu> menuMap) {
         int startIndex = 1;

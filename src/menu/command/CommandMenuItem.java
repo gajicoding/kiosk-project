@@ -1,5 +1,6 @@
 package menu.command;
 
+import kiosk.constants.CommandKey;
 import menu.type.ItemFunc;
 
 public class CommandMenuItem implements ItemFunc {

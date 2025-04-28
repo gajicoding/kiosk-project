@@ -1,4 +1,4 @@
-package kiosk;
+package kiosk.constants;
 
 public class Const {
     public static final int EXIT_NUMBER = 0;
