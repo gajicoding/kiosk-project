@@ -28,6 +28,6 @@ public class MenuItem implements ItemFunc {
 
     @Override
     public String getFormattedString() {
-        return String.format("%-20s| W %,6d | %s", name, price, description);
+        return String.format("%-25s| W %,6d | %s", name, price, description);
     }
 }

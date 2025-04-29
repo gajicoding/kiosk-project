@@ -26,17 +26,19 @@ public class Kiosk {
     private final Map<String, Menu> menuMap;
     private final Map<String, CommandMenu> orderMenuMap;
     Map<String, Integer> optionNumMap;
-    Map<Integer, MenuFunc> selectOptionMap;
+    Map<Integer, MenuFunc> selectMenuOptionMap;
+    Map<Integer, ItemFunc> selectItemOptionMap;
 
     Menu selectedCategory = null;
-    MenuItem selectedItem = null;
+    ItemFunc selectedItem = null;
 
     public Kiosk(Menu... menus) {
         this.scanner = new KioskScanner();
         this.menuMap = new HashMap<>();
         this.orderMenuMap = new HashMap<>();
         this.optionNumMap = new HashMap<>();
-        this.selectOptionMap = new HashMap<>();
+        this.selectMenuOptionMap = new HashMap<>();
+        this.selectItemOptionMap = new HashMap<>();
         this.order = new Order();
 
         for (Menu menu : menus) {
@@ -69,6 +71,7 @@ public class Kiosk {
 
                     key = getCommandKeyBySelectedNum(selectedNum);
                     if (isOrderMenu(key)) {
+                        // CART or CLEAR_CART
                         continue;
                     }
 
@@ -98,8 +101,36 @@ public class Kiosk {
                 case CART -> {
                     selectedNum = handleCart();
 
-                    // key = ORDER or GO_ADD_ITEM
+                    // key = ORDER or SELECT_ITEM_TO_CHANGE or CANCEL_ORDER
                     key = getCommandKeyBySelectedNum(selectedNum);
+                }
+
+                case SELECT_ITEM_TO_CHANGE -> {
+                    if (order.isNotEmpty()) {
+                        selectedNum = selectItemToChange();
+                    }
+
+                    if (isChangeOption(selectedNum)) {
+                        key = CommandKey.CHANGE_ITEM_QUANTITY;
+                    } else {
+                        key = CommandKey.MAIN;
+                    }
+                }
+
+                case CHANGE_ITEM_QUANTITY -> {
+                    selectedNum = changeItemQuantity();
+
+                    key = getCommandKeyBySelectedNum(selectedNum);
+                }
+
+                case INCREASE_ITEM -> {
+                    increaseItemQuantity();
+                    key = CommandKey.SELECT_ITEM_TO_CHANGE;
+                }
+
+                case DECREASE_ITEM -> {
+                    decreaseItemQuantity();
+                    key = CommandKey.SELECT_ITEM_TO_CHANGE;
                 }
 
                 case CLEAR_CART -> {
@@ -125,7 +156,9 @@ public class Kiosk {
         scanner.close();
     }
 
-
+    private boolean isChangeOption(int selectedNum) {
+        return selectedNum <= order.getOrderSize();
+    }
 
 
     /*
@@ -153,7 +186,7 @@ public class Kiosk {
             putSelectNumOptionByMenu(mainMenu, menuMap.size()+1);
             return mainMenu.size();
         }
-        return 0;
+        return 10;
     }
 
     private boolean isOrderMenu(CommandKey key){
@@ -161,7 +194,7 @@ public class Kiosk {
     }
 
     private void handleSelectedMenu() {
-        String menuName = selectOptionMap.get(selectedNum).getName();
+        String menuName = selectMenuOptionMap.get(selectedNum).getName();
         selectedCategory = menuMap.get(menuName);
 
         clearOptions();
@@ -178,7 +211,7 @@ public class Kiosk {
         SELECT ITEM
      */
     private int handleSelect() {
-        selectedItem = Objects.requireNonNull(selectedCategory).getMenuItem(selectedNum - 1);
+        selectedItem = selectItemOptionMap.get(selectedNum);
         System.out.println("선택한 메뉴: " + "\"" + selectedItem.getFormattedString() + "\"\n");
 
         CommandMenu choiceMenu = orderMenuMap.get(Const.CHOICE_GROUP);
@@ -192,12 +225,13 @@ public class Kiosk {
     }
 
     private void addItemToCart() {
-        order.addOrderItem(selectedItem);
-        System.out.println(Objects.requireNonNull(selectedItem).getName() + " - 장바구니에 추가되었습니다.");
+        MenuItem selecedMenuItem = (MenuItem) selectedItem;
+        order.addOrderItem(selecedMenuItem);
+        System.out.println(selecedMenuItem.getName() + " - 장바구니에 추가되었습니다.");
     }
 
     private void cancelSelect() {
-        System.out.println("선택을 취소합니다.");
+        System.out.println("선택을 취소합니다. ");
     }
 
 
@@ -207,7 +241,7 @@ public class Kiosk {
     private int handleCart() {
         clearOptions();
 
-        System.out.println("\n아래와 같이 주문 하시겠습니까?\n");
+        System.out.println("\n장바구니를 확인합니다.\n");
         System.out.println("[ Orders ]");
         System.out.print(order.getOrderListFormattedString());
 
@@ -227,6 +261,65 @@ public class Kiosk {
     private void clearCart() {
         order.reset();
         System.out.println("주문이 취소되었습니다.");
+    }
+
+
+    /*
+    *   장바구니 수량 변경
+    */
+    private int selectItemToChange() {
+        CommandMenu orderItems = getOrderItemOptions();
+
+        clearOptions();
+
+        System.out.println("\n수량을 변경할 메뉴를 선택하세요.");
+
+        printMenuItems(orderItems, 1);
+        putSelectNumOptionByMenu(orderItems, 1);
+        int optionSize = orderItems.size();
+
+        selectedNum = scanner.getInputBetweenAAndB(1, optionSize);
+
+        selectedItem = selectItemOptionMap.get(selectedNum);
+
+        return selectedNum;
+    }
+
+    private CommandMenu getOrderItemOptions() {
+        CommandMenu orderItems = new CommandMenu(Const.SELECT_ORDER_ITEM_LIST);
+        for(MenuItem item: order.getMenuItems()){
+            orderItems.addItem(
+                    new CommandMenuItem(item.getName(), order.getCount(item) + " 개")
+            );
+        }
+        orderItems.addItem(new CommandMenuItem(CommandKey.CANCEL_CHANGE, "Cancel", "장바구니로 돌아가기"));
+
+        return orderItems;
+    }
+
+    private int changeItemQuantity() {
+        System.out.println("\"" + selectedItem.getKey() + "\" 의 수량을 변경합니다.\n");
+
+        clearOptions();
+
+        CommandMenu changeItemMenu = orderMenuMap.get(Const.CHANGE_ITEM_GROUP);
+        printMenuItems(changeItemMenu, 1);
+        putSelectNumOptionByMenu(changeItemMenu, 1);
+        int optionSize = changeItemMenu.size();
+
+        selectedNum = scanner.getInputBetweenAAndB(1, optionSize);
+
+        return selectedNum;
+    }
+
+    private void increaseItemQuantity() {
+        MenuItem selectedOrderItem = findItemByKey(selectedItem.getKey());
+        order.increaseCount(selectedOrderItem);
+    }
+
+    private void decreaseItemQuantity() {
+        MenuItem selectedOrderItem = findItemByKey(selectedItem.getKey());
+        order.decreaseCount(selectedOrderItem);
     }
 
 
@@ -260,16 +353,22 @@ public class Kiosk {
     private void setOrderMenuMap() {
         orderMenuMap.put(Const.MAIN_GROUP, new CommandMenu(Const.DISPLAY_MAIN_GROUP,
                 new CommandMenuItem(CommandKey.CART, "Cart", "장바구니를 확인합니다."),
-                new CommandMenuItem(CommandKey.CLEAR_CART, "Cancel", "진행중인 주문을 취소합니다.")
+                new CommandMenuItem(CommandKey.CLEAR_CART, "Cancel Order", "진행중인 주문을 취소합니다.")
         ));
         orderMenuMap.put(Const.CART_GROUP, new CommandMenu(Const.DISPLAY_CART_GROUP,
-                new CommandMenuItem(CommandKey.ORDER, "Order", "주문한다."),
-                new CommandMenuItem(CommandKey.CANCEL_ORDER, "Add Item", "물건을 추가한다.")
+                new CommandMenuItem(CommandKey.ORDER, "Order", "주문하기"),
+                new CommandMenuItem(CommandKey.SELECT_ITEM_TO_CHANGE, "Change Item Quantity", "물건 수량 변경하기"),
+                new CommandMenuItem(CommandKey.CANCEL_ORDER, "Back to Menu", "메뉴로 돌아갑니다.")
         ));
         orderMenuMap.put(Const.CHOICE_GROUP, new CommandMenu(Const.DISPLAY_CHOICE_GROUP,
                 new CommandMenuItem(CommandKey.ADD_ITEM_TO_CART, "Add to Cart", "장바구니에 추가 합니다."),
-                new CommandMenuItem(CommandKey.CANCEL_SELECT, "Cancel", "취소한다.")
+                new CommandMenuItem(CommandKey.CANCEL_SELECT, "Cancel", "선택을 취소합니다.")
         ));
+        orderMenuMap.put(Const.CHANGE_ITEM_GROUP, new CommandMenu(Const.DISPLAY_CHANGE_ITEM_GROUP,
+                new CommandMenuItem(CommandKey.INCREASE_ITEM, "Increase Quantity", "수량을 1개 증가시킵니다."),
+                new CommandMenuItem(CommandKey.DECREASE_ITEM, "Decrease Quantity", "수량을 1개 감소시킵니다.")
+        ));
+
 
         CommandMenu discountMenu = new CommandMenu(Const.DISPLAY_DISCOUNT_GROUP);
         for(DiscountRule rule: DiscountRule.values()){
@@ -280,6 +379,17 @@ public class Kiosk {
         orderMenuMap.put(Const.DISCOUNT_GROUP, discountMenu);
     }
 
+    public MenuItem findItemByKey(String key) {
+        for (Menu menu : menuMap.values()) {
+            for(MenuItem item: menu.getItems()){
+                if (item.getName().equals(key)) {
+                    return item;
+                }
+            }
+        }
+        return null;
+    }
+
 
     private void printMainMenu(Map<String, Menu> menuMap) {
         int startIndex = 1;
@@ -288,7 +398,7 @@ public class Kiosk {
             System.out.println(startIndex++ + ". " + menu.getName());
         }
 
-        System.out.println("0. 종료\t\t| 종료");
+        System.out.println("0. 종료");
     }
 
     private void printMenuItems(MenuFunc menu, int startIndex) {
@@ -302,20 +412,21 @@ public class Kiosk {
         int startIndex = 1;
         for (Menu menu : menuMap.values()) {
             optionNumMap.put(menu.getName(), startIndex);
-            selectOptionMap.put(startIndex++, menu);
+            selectMenuOptionMap.put(startIndex++, menu);
         }
     }
 
     private <T extends MenuFunc> void putSelectNumOptionByMenu(T menu, int startIndex) {
         for (ItemFunc item : menu.getItems()) {
             optionNumMap.put(item.getKey(), startIndex);
-            selectOptionMap.put(startIndex++, menu);
+            selectItemOptionMap.put(startIndex++, item);
         }
     }
 
     private void clearOptions() {
         optionNumMap.clear();
-        selectOptionMap.clear();
+        selectMenuOptionMap.clear();
+        selectItemOptionMap.clear();
     }
 
     private CommandKey getCommandKeyBySelectedNum(int selectedNum) {

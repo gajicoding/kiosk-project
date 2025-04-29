@@ -31,6 +31,6 @@ public class CommandMenuItem implements ItemFunc {
 
     @Override
     public String getFormattedString() {
-        return String.format("%-20s| %s", name, description);
+        return String.format("%-25s| %s", name, description);
     }
 }
