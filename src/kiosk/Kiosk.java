@@ -112,6 +112,8 @@ public class Kiosk {
 
                     if (isChangeOption(selectedNum)) {
                         key = CommandKey.CHANGE_ITEM_QUANTITY;
+                    } else if(isChangeCancelOption(selectedNum)){
+                        key = CommandKey.CART;
                     } else {
                         key = CommandKey.MAIN;
                     }
@@ -158,6 +160,10 @@ public class Kiosk {
 
     private boolean isChangeOption(int selectedNum) {
         return selectedNum <= order.getOrderSize();
+    }
+
+    private boolean isChangeCancelOption(int selectedNum) {
+        return selectedNum == order.getOrderSize() + 1;
     }
 
 
