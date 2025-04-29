@@ -51,6 +51,7 @@ public class Kiosk {
         while(true) {
             if (key == null) {
                 key = CommandKey.MAIN;
+                continue;
             }
 
             if (key == CommandKey.EXIT) {
@@ -116,7 +117,7 @@ public class Kiosk {
                     key = null;
                 }
 
-                default -> throw new IllegalStateException("유효하지 않은 key 값: " + key);
+                default -> key = null;
             }
         }
 
@@ -206,11 +207,11 @@ public class Kiosk {
     private int handleCart() {
         clearOptions();
 
-        System.out.println("%n아래와 같이 주문 하시겠습니까?%n");
+        System.out.println("\n아래와 같이 주문 하시겠습니까?\n");
         System.out.println("[ Orders ]");
         System.out.print(order.getOrderListFormattedString());
 
-        System.out.println("%n[ Total ]");
+        System.out.println("\n[ Total ]");
         System.out.printf("w %,d%n", order.getTotalPrice());
 
         CommandMenu cartMenu = orderMenuMap.get(Const.CART_GROUP);
@@ -258,7 +259,7 @@ public class Kiosk {
 
     private void setOrderMenuMap() {
         orderMenuMap.put(Const.MAIN_GROUP, new CommandMenu(Const.DISPLAY_MAIN_GROUP,
-                new CommandMenuItem(CommandKey.CART, "Cart  ", "장바구니를 확인합니다."),
+                new CommandMenuItem(CommandKey.CART, "Cart", "장바구니를 확인합니다."),
                 new CommandMenuItem(CommandKey.CLEAR_CART, "Cancel", "진행중인 주문을 취소합니다.")
         ));
         orderMenuMap.put(Const.CART_GROUP, new CommandMenu(Const.DISPLAY_CART_GROUP,
@@ -273,7 +274,7 @@ public class Kiosk {
         CommandMenu discountMenu = new CommandMenu(Const.DISPLAY_DISCOUNT_GROUP);
         for(DiscountRule rule: DiscountRule.values()){
             discountMenu.addItem(
-                    new CommandMenuItem(rule.getType(), rule.getPercentage()+"% 할인")
+                    new CommandMenuItem(rule.getType(), rule.getTypeKr()+" "+ rule.getPercentage()+"% 할인")
             );
         }
         orderMenuMap.put(Const.DISCOUNT_GROUP, discountMenu);

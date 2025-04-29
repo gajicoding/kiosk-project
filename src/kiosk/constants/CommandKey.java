@@ -3,7 +3,6 @@ package kiosk.constants;
 public enum CommandKey {
     MAIN(Const.MAIN),
     SELECT_ITEM(Const.SELECT_ITEM),
-    ORDER_COMPLETE(Const.ORDER_COMPLETE),
     EXIT(Const.EXIT),
 
     // MAIN
