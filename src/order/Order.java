@@ -49,7 +49,9 @@ public class Order {
     }
 
     public void decreaseCount(MenuItem menuItem) {
-        orderMap.computeIfPresent(menuItem, (key, count) -> count == 1 ? null : count - 1);
+        orderMap.computeIfPresent(menuItem, (key, count) ->
+                count == 1 ? null : count - 1
+        );
     }
 
     public void reset() {
