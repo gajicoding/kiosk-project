@@ -1,11 +1,11 @@
 package menu.command;
 
-import menu.type.MenuFunc;
+import menu.type.MenuAction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandMenu implements MenuFunc {
+public class CommandMenu implements MenuAction {
     private final String name;
     private final List<CommandMenuItem> items;
 

@@ -1,8 +1,8 @@
 package menu.product;
 
-import menu.type.ItemFunc;
+import menu.type.ItemAction;
 
-public class MenuItem implements ItemFunc {
+public class MenuItem implements ItemAction {
     private final String name;
     private final int price;
     private final String description;

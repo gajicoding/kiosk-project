@@ -2,11 +2,11 @@ package menu.type;
 
 import java.util.List;
 
-public interface MenuFunc {
+public interface MenuAction {
     
     String getName();
 
     int size();
 
-    <T extends ItemFunc> List<T> getItems();
+    <T extends ItemAction> List<T> getItems();
 }

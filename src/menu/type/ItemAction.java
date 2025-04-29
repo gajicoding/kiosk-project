@@ -1,6 +1,6 @@
 package menu.type;
 
-public interface ItemFunc {
+public interface ItemAction {
     String getKey();
 
     String getFormattedString();

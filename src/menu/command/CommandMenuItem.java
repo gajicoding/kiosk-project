@@ -1,9 +1,9 @@
 package menu.command;
 
 import kiosk.constants.CommandKey;
-import menu.type.ItemFunc;
+import menu.type.ItemAction;
 
-public class CommandMenuItem implements ItemFunc {
+public class CommandMenuItem implements ItemAction {
     private CommandKey key;
     private final String name;
     private final String description;

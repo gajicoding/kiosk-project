@@ -1,11 +1,11 @@
 package menu.product;
 
-import menu.type.MenuFunc;
+import menu.type.MenuAction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Menu implements MenuFunc {
+public class Menu implements MenuAction {
     private final String name;
     private final List<MenuItem> items;
 
@@ -28,9 +28,5 @@ public class Menu implements MenuFunc {
     @SuppressWarnings("unchecked")
     public List<MenuItem> getItems() {
         return items;
-    }
-
-    public MenuItem getMenuItem(int i) {
-        return items.get(i);
     }
 }

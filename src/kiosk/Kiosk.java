@@ -2,14 +2,14 @@ package kiosk;
 
 import kiosk.constants.CommandKey;
 import kiosk.constants.Const;
-import kiosk.constants.DiscountRule;
+import kiosk.rule.DiscountRule;
 import kiosk.util.KioskScanner;
 import menu.command.CommandMenu;
 import menu.command.CommandMenuItem;
 import menu.product.Menu;
 import menu.product.MenuItem;
-import menu.type.ItemFunc;
-import menu.type.MenuFunc;
+import menu.type.ItemAction;
+import menu.type.MenuAction;
 import order.Order;
 
 import java.util.HashMap;
@@ -26,11 +26,11 @@ public class Kiosk {
     private final Map<String, Menu> menuMap;
     private final Map<String, CommandMenu> orderMenuMap;
     Map<String, Integer> optionNumMap;
-    Map<Integer, MenuFunc> selectMenuOptionMap;
-    Map<Integer, ItemFunc> selectItemOptionMap;
+    Map<Integer, MenuAction> selectMenuOptionMap;
+    Map<Integer, ItemAction> selectItemOptionMap;
 
     Menu selectedCategory = null;
-    ItemFunc selectedItem = null;
+    ItemAction selectedItem = null;
 
     public Kiosk(Menu... menus) {
         this.scanner = new KioskScanner();
@@ -407,7 +407,7 @@ public class Kiosk {
         System.out.println("0. 종료");
     }
 
-    private void printMenuItems(MenuFunc menu, int startIndex) {
+    private void printMenuItems(MenuAction menu, int startIndex) {
         // stream 활용
         System.out.println("\n[ " + menu.getName() + " ]");
         AtomicInteger index = new AtomicInteger(startIndex);
@@ -423,8 +423,8 @@ public class Kiosk {
         }
     }
 
-    private <T extends MenuFunc> void putSelectNumOptionByMenu(T menu, int startIndex) {
-        for (ItemFunc item : menu.getItems()) {
+    private <T extends MenuAction> void putSelectNumOptionByMenu(T menu, int startIndex) {
+        for (ItemAction item : menu.getItems()) {
             optionNumMap.put(item.getKey(), startIndex);
             selectItemOptionMap.put(startIndex++, item);
         }
