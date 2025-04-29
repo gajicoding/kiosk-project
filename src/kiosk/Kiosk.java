@@ -14,6 +14,7 @@ import order.Order;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Kiosk {
@@ -391,20 +392,21 @@ public class Kiosk {
 
 
     private void printMainMenu(Map<String, Menu> menuMap) {
-        int startIndex = 1;
+        // stream 활용
         System.out.println("\n[ " + "MAIN" + " ]");
-        for (Menu menu : menuMap.values()) {
-            System.out.println(startIndex++ + ". " + menu.getName());
-        }
+        AtomicInteger index = new AtomicInteger(1);
+        menuMap.values()
+                .forEach(menu -> System.out.println(index.getAndIncrement() + ". " + menu.getName()));
 
         System.out.println("0. 종료");
     }
 
     private void printMenuItems(MenuFunc menu, int startIndex) {
+        // stream 활용
         System.out.println("\n[ " + menu.getName() + " ]");
-        for (ItemFunc items : menu.getItems()) {
-            System.out.println(startIndex++ + ". " + items.getFormattedString());
-        }
+        AtomicInteger index = new AtomicInteger(startIndex);
+        menu.getItems()
+                .forEach(item -> System.out.println(index.getAndIncrement() + ". " + item.getFormattedString()));
     }
 
     private void putSelectNumOptionByMap(Map<String, Menu> menuMap) {
