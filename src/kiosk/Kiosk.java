@@ -33,13 +33,11 @@ public class Kiosk {
 
     public Kiosk(Menu... menus) {
         this.scanner = new KioskScanner();
-        this.order = new Order();
-
-        this.optionNumMap = new HashMap<>();
-        this.selectOptionMap = new HashMap<>();
-
         this.menuMap = new HashMap<>();
         this.orderMenuMap = new HashMap<>();
+        this.optionNumMap = new HashMap<>();
+        this.selectOptionMap = new HashMap<>();
+        this.order = new Order();
 
         for (Menu menu : menus) {
             menuMap.put(menu.getName(), menu);
