@@ -42,12 +42,12 @@ src
 ```
 
 ## 과제 진행 요약
-- 요구사항 정의 및 설계
-  - 1
-- 문제 해결 (트러블 슈팅)
-  - 1
+- 요구사항 정의
+  - [요구사항 정의](https://gajicoding.tistory.com/250)
 - 새로운 지식
-  - 1
+  - [가변 인자 (...)](https://gajicoding.tistory.com/247)
+  - [Map - compute(), computeIfAbsent(), computeIfPresent()](https://gajicoding.tistory.com/248)
+  - [가변 리스트 vs 불변 리스트](https://gajicoding.tistory.com/249)
 
 
 - UML <br/><br/>
