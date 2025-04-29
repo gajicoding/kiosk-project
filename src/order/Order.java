@@ -45,17 +45,11 @@ public class Order {
     }
 
     public void increaseCount(MenuItem menuItem) {
-        int changedCount = orderMap.get(menuItem)+1;
-        orderMap.put(menuItem, changedCount);
+        orderMap.computeIfPresent(menuItem, (key, count) -> count + 1);
     }
 
     public void decreaseCount(MenuItem menuItem) {
-        int changedCount = orderMap.get(menuItem)-1;
-        if(changedCount < 1) {
-            orderMap.remove(menuItem);
-        } else {
-            orderMap.put(menuItem, changedCount);
-        }
+        orderMap.computeIfPresent(menuItem, (key, count) -> count == 1 ? null : count - 1);
     }
 
     public void reset() {
