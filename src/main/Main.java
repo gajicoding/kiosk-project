@@ -8,7 +8,14 @@ public class Main {
     public static void main(String[] args) {
         // Menu 객체 생성을 통해 이름 설정
         // Menu 클래스 내 있는 List<MenuItem> 에 MenuItem 객체 생성하면서 삽입
+        Kiosk kiosk = getKiosk();
 
+
+        // Kiosk 내 시작하는 함수 호출
+        kiosk.start();
+    }
+
+    private static Kiosk getKiosk() {
         Menu burgersMenu  = new Menu("BURGERS",
                 new MenuItem("ShackBurger", 6900, "토마토, 양상추, 쉑소스가 토핑된 치즈버거"),
                 new MenuItem("SmokeShack", 8900, "베이컨, 체리 페퍼에 쉑소스가 토핑된 치즈버거"),
@@ -28,12 +35,7 @@ public class Main {
                 new MenuItem("Chocolate Cookie", 2500, "초코 쿠키")
         );
 
-
         // Kiosk 객체 생성
-        Kiosk kiosk = new Kiosk(burgersMenu, drinkMenu, dessertMenu);
-
-
-        // Kiosk 내 시작하는 함수 호출
-        kiosk.start();
+        return new Kiosk(burgersMenu, drinkMenu, dessertMenu);
     }
 }
