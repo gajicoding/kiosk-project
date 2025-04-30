@@ -44,6 +44,8 @@ src
 ## 과제 진행 요약
 - 요구사항 정의
   - [요구사항 정의](https://gajicoding.tistory.com/250)
+- 문제 해결 (트러블 슈팅)
+  - [List.of()로 만든 리스트에서 add()가 안 되는 이유](https://gajicoding.tistory.com/261)
 - 새로운 지식
   - [가변 인자 (...)](https://gajicoding.tistory.com/247)
   - [Map - compute(), computeIfAbsent(), computeIfPresent()](https://gajicoding.tistory.com/248)
